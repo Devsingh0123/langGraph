@@ -1,33 +1,23 @@
 import llm from "../config/llm.js";
+import { chatbotGraph } from "../graph/chatbot.graph.js";
+
+export const chatController = async (req, res) => {
+  try {
 
 
-export const chatController = async(req,res)=>{
+const {message }= req.body
+    const result = await chatbotGraph.invoke({
+      message: message,
+    });
 
-    try{
+    console.log('result ', result);
 
-        const {message}=req.body;
+    res.json(result);
+  } catch (error) {
+    console.log(error);
 
-
-        const response = await llm.invoke(message);
-
-
-
-        res.json({
-
-            response:response.content
-
-        })
-
-
-    }
-    catch(error){
-
-        console.log(error);
-
-        res.status(500).json({
-            message:"Something went wrong"
-        })
-
-    }
-
-}
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};

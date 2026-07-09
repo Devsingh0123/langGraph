@@ -1,9 +1,13 @@
-export const chatbotNode = async (state)=>{
+import llm from "../config/llm.js";
+import chatPrompt from "../prompts/chat.prompt.js";
 
-    console.log("Current State:", state);
+export const chatbotNode = async (state) => {
+  // console.log("Node received state:", state);
+  const chain = chatPrompt.pipe(llm);
 
-    return {
-        message:"Hello from LangGraph"
-    }
+  const response = await chain.invoke({ question: state.message });
 
-}
+  return {
+    response: response.content,
+  };
+};

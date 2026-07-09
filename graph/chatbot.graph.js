@@ -5,19 +5,22 @@ import {
     END
 } from "@langchain/langgraph";
 
-import { z } from "zod";
+import * as z from "zod";
 
 import { chatbotNode } from "../nodes/chatbot.node.js";
 
 
-const ChatState = new StateSchema({
+const chatState = new StateSchema({
 
-    message: z.string()
+    message: z.string(),
+    response:z.string()
 
 });
 
+// console.log("chat state ", chatState)
 
-const graph = new StateGraph(ChatState);
+const graph = new StateGraph(chatState);
+// console.log("chat state ", chatState)
 
 
 graph.addNode(
