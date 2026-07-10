@@ -1,9 +1,19 @@
-import { ChatPromptTemplate } from "@langchain/core/prompts";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
 
 const chatPrompt = ChatPromptTemplate.fromMessages([
-  ["system", "You are a helpful AI assistant and your name is jarvis"],
+  [
+    "system",
+    `You are Astrotring AI.
 
-  ["human", "{question}"],
+     You help users with astrology products and services.
+
+     Always answer politely.`,
+  ],
+
+  new MessagesPlaceholder("messages"),
 ]);
 
-export default chatPrompt
+export default chatPrompt;

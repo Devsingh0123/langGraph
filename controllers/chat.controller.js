@@ -1,18 +1,32 @@
-import llm from "../config/llm.js";
+// import { chatbotGraph } from "../graph/graph.js";
+
 import { chatbotGraph } from "../graph/chatbot.graph.js";
 
 export const chatController = async (req, res) => {
   try {
+    const { message, sessionId } = req.body;
 
+    const result = await chatbotGraph.invoke(
+      {
+        messages: [
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      },
+      {
+        configurable: {
+          thread_id: sessionId,
+        },
+      },
+    );
+    console.log("result", result);
+    const lastMessage = result.messages.at(-1);
 
-const {message }= req.body
-    const result = await chatbotGraph.invoke({
-      message: message,
+    res.json({
+      response: lastMessage.content,
     });
-
-    console.log('result ', result);
-
-    res.json(result);
   } catch (error) {
     console.log(error);
 

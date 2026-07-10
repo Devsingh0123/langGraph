@@ -1,44 +1,23 @@
+
+
+
 import {
-    StateGraph,
-    StateSchema,
-    START,
-    END
+  StateGraph,
+  START,
+  END,
+  MemorySaver,
 } from "@langchain/langgraph";
 
-import * as z from "zod";
-
+import { ChatState } from "./state.js";
 import { chatbotNode } from "../nodes/chatbot.node.js";
 
+const graph = new StateGraph(ChatState);
 
-const chatState = new StateSchema({
+graph.addNode("chatbot", chatbotNode);
 
-    message: z.string(),
-    response:z.string()
-
-});
-
-// console.log("chat state ", chatState)
-
-const graph = new StateGraph(chatState);
-// console.log("chat state ", chatState)
+graph.addEdge(START, "chatbot");
+graph.addEdge("chatbot", END);
 
 
-graph.addNode(
-    "chatbot",
-    chatbotNode
-);
-
-
-graph.addEdge(
-    START,
-    "chatbot"
-);
-
-
-graph.addEdge(
-    "chatbot",
-    END
-);
-
-
-export const chatbotGraph = graph.compile();
+const checkpointer = new MemorySaver();
+export const chatbotGraph = graph.compile({checkpointer});
