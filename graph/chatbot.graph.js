@@ -10,11 +10,11 @@ import { conversationDecisionNode } from "../nodes/conversationDecision.node.js"
 
 import { clarificationNode } from "../nodes/clarification.node.js";
 
-import { selectProductNode } from "../nodes/selectProduct.node.js";
 
 import { router } from "../nodes/router.node.js";
 
 import { conversationRouter } from "./conditions.js";
+import { selectProductNode } from "../nodes/selectProduct.node.js";
 
 const graph = new StateGraph(ChatState);
 

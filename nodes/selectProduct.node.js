@@ -1,38 +1,23 @@
 export async function selectProductNode(state) {
+  const decision = state.conversationDecision || {};
 
+  const products = state.products || [];
 
-    const decision =
-        state.conversationDecision;
+  const productName = decision.productName;
 
+  if (!productName || products.length === 0) {
+    return {};
+  }
 
-    const products =
-        state.products || [];
+  const selectedProduct = products.find((product) =>
+    product.name.toLowerCase().includes(productName.toLowerCase()),
+  );
 
+  if (!selectedProduct) {
+    return {};
+  }
 
-
-    const selectedProduct =
-        products.find(product =>
-            product.name
-            .toLowerCase()
-            .includes(
-              decision.productName
-              .toLowerCase()
-            )
-        );
-
-
-
-    if(!selectedProduct){
-
-        return {};
-
-    }
-
-
-    return {
-
-        selectedProduct
-
-    };
-
+  return {
+    selectedProduct,
+  };
 }

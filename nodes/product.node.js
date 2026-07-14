@@ -13,11 +13,10 @@ export async function productNode(state) {
   const userQuery = messages.at(-1).content;
 
   // 3. Previous conversation nikalna
-  const conversationHistory =
-getConversationHistory(
+  const conversationHistory = getConversationHistory(
     messages,
-    state.selectedProduct
-);
+    state.selectedProduct,
+  );
 
   console.log("Current Question:", userQuery);
 
@@ -43,29 +42,34 @@ ${userQuery}
 
   const response = await chain.invoke({
     history: conversationHistory,
+
     context,
 
     question: userQuery,
   });
 
-  // 7. State update
+  // 7. Products state ke liye data banana
+  const products = documents.map((doc) => ({
+    name: doc.metadata.name,
+
+    price: doc.metadata.price,
+
+    image: doc.metadata.image,
+
+    slug: doc.metadata.slug,
+  }));
+
+  // 8. State update
   return {
     messages: [
       {
         role: "assistant",
+
         content: response.content,
       },
     ],
 
-    products: documents.map((doc) => ({
-      name: doc.metadata.name,
-
-      price: doc.metadata.price,
-
-      image: doc.metadata.image,
-
-      slug: doc.metadata.slug,
-    })),
+    products,
 
     selectedProduct: products.length === 1 ? products[0] : undefined,
   };
