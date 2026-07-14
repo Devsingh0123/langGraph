@@ -21,11 +21,14 @@ export const chatController = async (req, res) => {
         },
       },
     );
-    console.log("result", result);
+    // console.log("result", result);
     const lastMessage = result.messages.at(-1);
+        // console.log("lastMessage", lastMessage);
+
 
     res.json({
       response: lastMessage.content,
+      products: result.products || [],
     });
   } catch (error) {
     console.log(error);
