@@ -1,97 +1,36 @@
-import { StateGraph, START, END, MemorySaver } from "@langchain/langgraph";
+import { END, MemorySaver, START, StateGraph } from "@langchain/langgraph";
 
 import { ChatState } from "./state.js";
-
-import { chatbotNode } from "../nodes/chatbot.node.js";
-import { productNode } from "../nodes/product.node.js";
-import { intentNode } from "../nodes/intent.node.js";
-
-import { conversationDecisionNode } from "../nodes/conversationDecision.node.js";
-
+import { chatNode } from "../nodes/chat.node.js";
 import { clarificationNode } from "../nodes/clarification.node.js";
-
-
-import { router } from "../nodes/router.node.js";
-
-import { conversationRouter } from "./conditions.js";
-import { selectProductNode } from "../nodes/selectProduct.node.js";
+import { discoveryNode } from "../nodes/discovery.node.js";
+import { productInfoNode } from "../nodes/productInfo.node.js";
+import { routeTurn } from "../nodes/router.node.js";
+import { understandTurnNode } from "../nodes/understandTurn.node.js";
 
 const graph = new StateGraph(ChatState);
 
-// =================
-// Nodes
-// =================
+graph.addNode("understandTurn", understandTurnNode);
+graph.addNode("discoverProducts", discoveryNode);
+graph.addNode("productInfo", productInfoNode);
+graph.addNode("chat", chatNode);
+graph.addNode("clarify", clarificationNode);
 
-graph.addNode("decision", conversationDecisionNode);
+graph.addEdge(START, "understandTurn");
+graph.addConditionalEdges("understandTurn", routeTurn, {
+  discoverProducts: "discoverProducts",
+  productInfo: "productInfo",
+  chat: "chat",
+  clarify: "clarify",
+});
 
-graph.addNode("intentClassifier", intentNode);
+graph.addEdge("discoverProducts", END);
+graph.addEdge("productInfo", END);
+graph.addEdge("chat", END);
+graph.addEdge("clarify", END);
 
-graph.addNode("chatbot", chatbotNode);
-
-graph.addNode("product", productNode);
-
-graph.addNode("selectProduct", selectProductNode);
-
-graph.addNode("clarification", clarificationNode);
-
-// =================
-// Starting Point
-// =================
-
-graph.addEdge(START, "decision");
-
-// =================
-// Conversation Decision Routing
-// =================
-
-graph.addConditionalEdges(
-  "decision",
-
-  conversationRouter,
-
-  {
-    selectProduct: "selectProduct",
-
-    clarification: "clarification",
-
-    continue: "intentClassifier",
-  },
-);
-
-// =================
-// Intent Routing
-// =================
-
-graph.addConditionalEdges(
-  "intentClassifier",
-
-  router,
-
-  {
-    chatbot: "chatbot",
-
-    product: "product",
-  },
-);
-
-// =================
-// End Nodes
-// =================
-
-graph.addEdge("chatbot", END);
-
-graph.addEdge("product", END);
-
-graph.addEdge("selectProduct", END);
-
-graph.addEdge("clarification", END);
-
-// =================
-// Memory
-// =================
-
-const checkpointer = new MemorySaver();
-
+// Replace this with a shared checkpoint saver (for example Postgres or Redis)
+// when deploying multiple server instances. The graph itself is checkpoint-ready.
 export const chatbotGraph = graph.compile({
-  checkpointer,
+  checkpointer: new MemorySaver(),
 });

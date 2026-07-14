@@ -1,11 +1,41 @@
-import { StateSchema, MessagesValue } from "@langchain/langgraph";
+import { MessagesValue, StateSchema } from "@langchain/langgraph";
 import * as z from "zod";
+
+export const ProductCardSchema = z.object({
+  id: z.union([z.number(), z.string()]),
+  name: z.string(),
+  slug: z.string().nullable(),
+  image: z.string().nullable(),
+  price: z.number().nullable(),
+  category: z.string().nullable(),
+});
+
+export const TurnSchema = z.object({
+  action: z.enum([
+    "DISCOVER_PRODUCTS",
+    "SHOW_ALTERNATIVES",
+    "PRODUCT_DETAILS",
+    "PRODUCT_PRICE",
+    "PRODUCT_AVAILABILITY",
+    "PRODUCT_USAGE",
+    "GENERAL_CHAT",
+    "CLARIFY",
+  ]),
+  searchQuery: z.string().nullable(),
+  shownProductIndex: z.number().int().positive().nullable(),
+  clarificationQuestion: z.string().nullable(),
+});
+
+const ShoppingContextSchema = z.object({
+  lastUserRequest: z.string().nullable(),
+  lastDiscoveryQuery: z.string().nullable(),
+  currentNeed: z.string().nullable(),
+});
 
 export const ChatState = new StateSchema({
   messages: MessagesValue,
-  intent: z.string().optional(),
-  products: z.array(z.any()).optional(),
-  conversationContext: z.string().optional(),
-  selectedProduct: z.any().optional(),
-  conversationDecision: z.any().optional(),
+  turn: TurnSchema.optional(),
+  shownProducts: z.array(ProductCardSchema).optional(),
+  activeProductId: z.union([z.number(), z.string()]).nullable().optional(),
+  shoppingContext: ShoppingContextSchema.optional(),
 });

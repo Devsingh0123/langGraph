@@ -1,65 +1,15 @@
-export function getConversationHistory(
-    messages,
-    selectedProduct
-){
+function roleForMessage(message) {
+  if (message?._getType?.() === "human" || message?.role === "user") return "User";
+  if (message?._getType?.() === "ai" || message?.role === "assistant") return "Assistant";
+  return "System";
+}
 
-    let history = "";
-console.log("MESSAGES:", messages);
+export function getLatestUserMessage(messages = []) {
+  return messages.at(-1)?.content || "";
+}
 
-    if(messages && messages.length > 1){
-
-        history = messages
-        .slice(0,-1)
-        .map((message)=>{
-
-
-            let role = "unknown";
-
-
-            if(message._getType){
-
-                role = message._getType();
-
-            }
-
-
-            if(role === "human"){
-
-                role = "User";
-
-            }
-            else if(role === "ai"){
-
-                role = "Assistant";
-
-            }
-
-
-
-            return `${role}: ${message.content}`;
-
-
-        })
-        .join("\n\n");
-
-    }
-
-
-
-    if(selectedProduct){
-
-        history += `
-
-Current Selected Product:
-
-${selectedProduct.name}
-
-`;
-
-    }
-
-
-
-    return history;
-
+export function getConversationTranscript(messages = [], limit = 12) {
+  return messages.slice(-limit).map((message) =>
+    `${roleForMessage(message)}: ${message.content}`,
+  ).join("\n");
 }

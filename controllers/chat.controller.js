@@ -6,12 +6,20 @@ export const chatController = async (req, res) => {
   try {
     const { message, sessionId } = req.body;
 
+    if (typeof message !== "string" || !message.trim()) {
+      return res.status(400).json({ message: "message must be a non-empty string" });
+    }
+
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      return res.status(400).json({ message: "sessionId must be a non-empty string" });
+    }
+
     const result = await chatbotGraph.invoke(
       {
         messages: [
           {
             role: "user",
-            content: message,
+            content: message.trim(),
           },
         ],
       },
@@ -28,7 +36,8 @@ export const chatController = async (req, res) => {
 
     res.json({
       response: lastMessage.content,
-      products: result.products || [],
+      products: result.shownProducts || [],
+      activeProductId: result.activeProductId ?? null,
     });
   } catch (error) {
     console.log(error);
