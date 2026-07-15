@@ -7,7 +7,11 @@ export function routeTurn(state) {
     case "PRODUCT_PRICE":
     case "PRODUCT_AVAILABILITY":
     case "PRODUCT_USAGE":
+    case "COMPARE_PRODUCTS":
+    case "SELECT_PRODUCT":
       return "productInfo";
+    case "RESET_CONTEXT":
+      return "clarify";
     case "CLARIFY":
       return "clarify";
     default:

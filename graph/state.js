@@ -18,18 +18,20 @@ export const TurnSchema = z.object({
     "PRODUCT_PRICE",
     "PRODUCT_AVAILABILITY",
     "PRODUCT_USAGE",
+    "COMPARE_PRODUCTS",
+    "SELECT_PRODUCT",
+    "RESET_CONTEXT",
     "GENERAL_CHAT",
     "CLARIFY",
   ]),
   searchQuery: z.string().nullable(),
   shownProductIndex: z.number().int().positive().nullable(),
+  comparisonIndexes: z.array(z.number().int().positive()).max(3).nullable(),
   clarificationQuestion: z.string().nullable(),
 });
 
 const ShoppingContextSchema = z.object({
-  lastUserRequest: z.string().nullable(),
   lastDiscoveryQuery: z.string().nullable(),
-  currentNeed: z.string().nullable(),
 });
 
 export const ChatState = new StateSchema({

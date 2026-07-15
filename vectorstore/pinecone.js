@@ -1,50 +1,18 @@
 import { PineconeStore } from "@langchain/pinecone";
 
-import embeddings from "../config/embeddings.js";
-import pinecone from "../config/pinecone.js";
+import { getEmbeddings } from "../config/embeddings.js";
+import { getPinecone } from "../config/pinecone.js";
 
-
-export async function createVectorStore(documents){
-
-    const index = pinecone.Index(
-        process.env.PINECONE_INDEX_NAME
-    );
-
-
-    const vectorStore = await PineconeStore.fromDocuments(
-        documents,
-        embeddings,
-        {
-            pineconeIndex:index,
-        }
-    );
-
-
-    console.log("✅ Data stored in Pinecone");
-
-
-    return vectorStore;
+function getIndex() {
+  if (!process.env.PINECONE_INDEX_NAME) throw new Error("PINECONE_INDEX_NAME is not configured");
+  return getPinecone().Index(process.env.PINECONE_INDEX_NAME);
 }
 
-// search
+export async function createVectorStore(documents) {
+  return PineconeStore.fromDocuments(documents, getEmbeddings(), { pineconeIndex: getIndex() });
+}
 
 export async function searchVectorStore(query, k = 3) {
-
-    const index = pinecone.Index(
-        process.env.PINECONE_INDEX_NAME
-    );
-
-    const vectorStore = await PineconeStore.fromExistingIndex(
-        embeddings,
-        {
-            pineconeIndex: index,
-        }
-    );
-
-    const documents = await vectorStore.similaritySearch(
-        query,
-        k
-    );
-
-    return documents;
+  const vectorStore = await PineconeStore.fromExistingIndex(getEmbeddings(), { pineconeIndex: getIndex() });
+  return vectorStore.similaritySearch(query, k);
 }

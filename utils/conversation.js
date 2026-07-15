@@ -5,7 +5,10 @@ function roleForMessage(message) {
 }
 
 export function getLatestUserMessage(messages = []) {
-  return messages.at(-1)?.content || "";
+  for (const message of [...messages].reverse()) {
+    if (roleForMessage(message) === "User") return String(message.content || "");
+  }
+  return "";
 }
 
 export function getConversationTranscript(messages = [], limit = 12) {
