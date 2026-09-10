@@ -1,6 +1,6 @@
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 
-let embeddings;
+let embeddings; 
 
 export function getEmbeddings() {
   if (!process.env.GOOGLE_API_KEY) throw new Error("GOOGLE_API_KEY is not configured");
